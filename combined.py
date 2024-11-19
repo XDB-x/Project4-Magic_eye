@@ -19,8 +19,13 @@ def display(img, title='', colorbar=False, cmap='gray'):
     plt.show()
 
 def make_detailed_pattern(shape=(128, 128), levels=64):
-    pattern = np.random.randint(0, levels, (*shape, 3)) / levels  
-    pattern = skimage.filters.gaussian(pattern, sigma=0.5)  
+    # pattern = np.random.randint(0, levels, (*shape, 3)) / levels  
+    # pattern = skimage.filters.gaussian(pattern, sigma=0.5)  
+    # return pattern
+
+    texture_image_path = "texture_forest.jpg"
+    texture_image = Image.open(texture_image_path).convert('RGB').resize(shape)
+    pattern = np.array(texture_image) / 255.0
     return pattern
 
 def normalize(depthmap):
@@ -65,10 +70,21 @@ def generate_depth_map(image_path, model_type="DPT_Large"):
     depth_map = cv2.normalize(depth_map, None, 0, 255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
     return depth_map
 
+def apply_edge_gradient(depthmap, fade_width=20):
+    h, w = depthmap.shape
+    y, x = np.ogrid[:h, :w]
+
+    distance_to_edge = np.minimum(np.minimum(x, w - x - 1), np.minimum(y, h - y - 1))
+    gradient_mask = np.clip(distance_to_edge / fade_width, 0, 1)
+
+    return depthmap * gradient_mask
+
 try:
-    depth_map = generate_depth_map("image.jpg")
+    depth_map = generate_depth_map("tree.jpg")
+    depth_map = apply_edge_gradient(depth_map, fade_width=30)
+
     display(depth_map, title='Original Depth Map', colorbar=True)
-    pattern = make_detailed_pattern(shape=(128, 128))
+    pattern = make_detailed_pattern(shape=(256, 256))
     autostereogram = make_autostereogram(depth_map, pattern, shift_amplitude=0.2)
     display(autostereogram, title='Autostereogram')
 except FileNotFoundError:
