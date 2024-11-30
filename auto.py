@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import os
 
 def generate_autostereogram(background_image, depth_map, max_offset=50, repeat_width=20):
     height, width = depth_map.shape
@@ -17,7 +18,7 @@ def generate_autostereogram(background_image, depth_map, max_offset=50, repeat_w
 
     return autostereogram
 
-depth_map = cv2.imread("depth_map.png", cv2.IMREAD_GRAYSCALE)
+depth_map = cv2.imread("depthMap/final_leaf.png", cv2.IMREAD_GRAYSCALE)
 depth_map = cv2.normalize(depth_map, None, 0, 255, cv2.NORM_MINMAX)
 depth_map = cv2.equalizeHist(depth_map)
 
@@ -27,7 +28,13 @@ background_image = np.tile(random_strip, (1, int(width / 20) + 1, 1))[:, :width,
 
 autostereogram = generate_autostereogram(background_image, depth_map)
 
+output_folder = "autostereogram"
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+    
+save_path = os.path.join(output_folder, "auto_autostereogram.png")
+
 cv2.imshow("Autostereogram", autostereogram)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-cv2.imwrite("final_autostereogram.png", autostereogram)
+cv2.imwrite(save_path, autostereogram)

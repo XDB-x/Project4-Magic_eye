@@ -1,6 +1,7 @@
 import torch
 import cv2
 import numpy as np
+import os
 from torchvision import transforms
 from PIL import Image
 
@@ -14,7 +15,7 @@ midas.to(device)
 
 midas_transforms = torch.hub.load("intel-isl/MiDaS", "transforms")
 
-input_image = Image.open("leaf.jpg")
+input_image = Image.open("inputPhoto/tree.jpg")
 
 input_image_np = np.array(input_image) / 255.0
 input_image_tensor = torch.from_numpy(input_image_np).permute(2, 0, 1).unsqueeze(0)
@@ -33,4 +34,12 @@ depth_map = prediction.cpu().numpy()
 
 depth_map = cv2.normalize(depth_map, None, 0, 255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 
-cv2.imwrite("depth_map.png", depth_map)
+output_folder = "depthMap"
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+    
+save_path = os.path.join(output_folder, "main2_depthMap.png")
+cv2.imwrite(save_path, depth_map)
+cv2.imshow("depth map", depth_map)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

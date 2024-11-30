@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import skimage, skimage.io, skimage.color, skimage.exposure, skimage.filters
+import os
+import cv2
+
 
 plt.rcParams['figure.dpi'] = 150
 
@@ -45,7 +48,7 @@ def make_autostereogram(depthmap, pattern, shift_amplitude=0.2, invert=False):
     return autostereogram
 
 try:
-    img = skimage.io.imread('image3.jpg')
+    img = skimage.io.imread('inputPhoto/chair.jpg')
     original_img = img.copy()  
     if img.shape[2] == 4:  
         img = img[:, :, :3]
@@ -54,9 +57,29 @@ try:
 except FileNotFoundError:
     depthmap = None
 
+output_folder = "depthMap"
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+    
+save_path = os.path.join(output_folder, "main_depthMap.png")
+cv2.imwrite(save_path, depthmap)
+cv2.imshow("depth map", depthmap)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
 if depthmap is not None:
     display(original_img, title='Original Image')
     display(enhanced_depthmap, title='Enhanced Depth Map', colorbar=True)
     pattern = make_detailed_pattern(shape=(128, 128))
     autostereogram = make_autostereogram(enhanced_depthmap, pattern, shift_amplitude=0.2)
     display(autostereogram, title='Autostereogram')
+
+output_folder = "autostereogram"
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+    
+save_path = os.path.join(output_folder, "main_autostereogram.png")
+cv2.imwrite(save_path, autostereogram)
+cv2.imshow("autostereogram", autostereogram)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
