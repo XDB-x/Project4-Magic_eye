@@ -12,3 +12,5 @@ Final - combined version:
 
 main2.py deep map we think good and main.py the atuostereogram good so we try to combined them together.
 And we add the colorful image as texture's basic part.
+
+update:
