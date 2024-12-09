@@ -14,3 +14,6 @@ main2.py deep map we think good and main.py the atuostereogram good so we try to
 And we add the colorful image as texture's basic part.
 
 update:
+v1 folders - previous version.
+
+v2 - add more texture patterns and depthmaps to analyze.
